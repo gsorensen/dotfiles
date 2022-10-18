@@ -30,6 +30,7 @@ local config = {
 
   -- Set colorscheme to use
   colorscheme = "tokyonight",
+  --colorscheme = "default_theme",
 
   -- Add highlight groups in any theme
   highlights = {
@@ -49,6 +50,8 @@ local config = {
       number = true, -- sets vim.opt.number
       spell = false, -- sets vim.opt.spell
       signcolumn = "auto", -- sets vim.opt.signcolumn to auto
+      shiftwidth = 4,
+      tabstop = 4, -- Tab to four spaces, as it should be
       wrap = false, -- sets vim.opt.wrap
     },
     g = {
@@ -135,14 +138,15 @@ local config = {
   -- Extend LSP configuration
   lsp = {
     -- enable servers that you already have installed without mason
-    skip_setup = { "rust_analyzer" },
+    skip_setup = { "rust_analyzer", "clangd" },
     servers = {
       -- "pyright"
     },
     formatting = {
-      format_on_save = true, -- enable or disable auto formatting on save
+      format_on_save = false, -- enable or disable auto formatting on save
       disabled = { -- disable formatting capabilities for the listed clients
         -- "sumneko_lua",
+        "clangd",
       },
       -- filter = function(client) -- fully override the default formatting function
       --   return true
@@ -165,6 +169,11 @@ local config = {
 
     -- Add overrides for LSP server settings, the keys are the name of the server
     ["server-settings"] = {
+      clangd = {
+        capabilities = {
+          offsetEncoding = "utf-8",
+        },
+      },
       -- example for addings schemas to yamlls
       -- yamlls = { -- override table for require("lspconfig").yamlls.setup({...})
       --   settings = {
@@ -194,6 +203,7 @@ local config = {
       ["<leader>bc"] = { "<cmd>BufferLinePickClose<cr>", desc = "Pick to close" },
       ["<leader>bj"] = { "<cmd>BufferLinePick<cr>", desc = "Pick to jump" },
       ["<leader>bt"] = { "<cmd>BufferLineSortByTabs<cr>", desc = "Sort by tabs" },
+      ["<leader>s"] = {"<cmd>ClangdSwitchSourceHeader<CR>", desc = "Switch header/source"},
       -- quick save
       -- ["<C-s>"] = { ":w!<cr>", desc = "Save File" },  -- change description but the same command
     },
@@ -222,7 +232,16 @@ local config = {
           }
         end,
       },-- {
-      --   "ray-x/lsp_signature.nvim",
+      {
+        "p00f/clangd_extensions.nvim",
+        after = "mason-lspconfig.nvim", -- make sure to load after mason-lspconfig
+        config = function()
+          require("clangd_extensions").setup {
+            server = astronvim.lsp.server_settings "clangd",
+          }
+        end,
+      },
+        --   "ray-x/lsp_signature.nvim",
       --   event = "BufRead",
       --   config = function()
       --     require("lsp_signature").setup()
@@ -258,7 +277,7 @@ local config = {
     -- use mason-lspconfig to configure LSP installations
     ["mason-lspconfig"] = { -- overrides `require("mason-lspconfig").setup(...)`
       -- ensure_installed = { "sumneko_lua" },
-      ensure_installed = { "rust_analyzer" },
+      ensure_installed = { "rust_analyzer", "clangd" },
     },
     -- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
     ["mason-null-ls"] = { -- overrides `require("mason-null-ls").setup(...)`
