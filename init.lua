@@ -4,9 +4,6 @@
 -- You can think of a Lua "table" as a dictionary like data structure the
 -- normal format is "key = value". These also handle array like data structures
 -- where a value with no key simply has an implicit numeric key
-
--- This is a config file based on standard AstroVim setup.
--- In order to use it, install AstroVim, then place this file in lua/user/init.lua 
 local config = {
 
   -- Configure AstroNvim updates
@@ -205,12 +202,19 @@ local config = {
       ["<leader>bt"] = { "<cmd>BufferLineSortByTabs<cr>", desc = "Sort by tabs" },
       ["<leader>s"] = {"<cmd>ClangdSwitchSourceHeader<CR>", desc = "Switch header/source"},
       -- quick save
-      -- ["<C-s>"] = { ":w!<cr>", desc = "Save File" },  -- change description but the same command
+      ["<C-s>"] = { ":w!<cr>", desc = "Save File" }-- change description but the same command
     },
     t = {
       -- setting a mapping to false will disable it
       -- ["<esc>"] = false,
     },
+    i = {
+        ["jk"] = {"<esc>", desc = "Exit insert mode"},
+    },
+    v = {
+        ["jk"] = {"<esc>", desc = "Exit insert mode"},
+    },
+     
   },
 
   -- Configure plugins
