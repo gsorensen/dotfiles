@@ -153,6 +153,7 @@ local config = {
     mappings = {
       n = {
         -- ["<leader>lf"] = false -- disable formatting keymap
+        ["<leader>rn"] = {vim.lsp.buf.rename},
       },
     },
     -- add to the global LSP on_attach function
@@ -201,6 +202,7 @@ local config = {
       ["<leader>bj"] = { "<cmd>BufferLinePick<cr>", desc = "Pick to jump" },
       ["<leader>bt"] = { "<cmd>BufferLineSortByTabs<cr>", desc = "Sort by tabs" },
       ["<leader>s"] = {"<cmd>ClangdSwitchSourceHeader<CR>", desc = "Switch header/source"},
+      ["<leader>ap"] = {"<cmd>GitBlameToggle<CR>", desc="Toggle git blame"},
       -- quick save
       ["<C-s>"] = { ":w!<cr>", desc = "Save File" }-- change description but the same command
     },
@@ -227,6 +229,7 @@ local config = {
       -- Add plugins, the packer syntax without the "use"
       -- { "andweeb/presence.nvim" },
       { "folke/tokyonight.nvim" },
+      { "f-person/git-blame.nvim" }, 
       {
         "simrat39/rust-tools.nvim",
         after = "mason-lspconfig.nvim", -- make sure to load after mason-lspconfig
@@ -244,6 +247,14 @@ local config = {
             server = astronvim.lsp.server_settings "clangd",
           }
         end,
+      },
+      {
+        "puremourning/vimspector",
+        cmd = { "VimspectorInstall", "VimspectorUpdate" },
+        fn = { "vimspector#Launch()", "vimspector#ToggleBreakpoint", "vimspector#Continue" },
+        config = function()
+            require("config.vimspector").setup()
+        end, 
       },
         --   "ray-x/lsp_signature.nvim",
       --   event = "BufRead",
@@ -287,6 +298,28 @@ local config = {
     ["mason-null-ls"] = { -- overrides `require("mason-null-ls").setup(...)`
       -- ensure_installed = { "prettier", "stylua" },
     },
+    heirline = function(config)
+      -- the first element of the default configuration table is the statusline
+      config[1] = {
+        -- set the fg/bg of the statusline
+        hl = { fg = "fg", bg = "bg" },
+        -- when adding the mode component, enable the mode text with padding to the left/right of it
+        astronvim.status.component.mode { mode_text = { padding = { left = 1, right = 1 } } },
+        -- add all the other components for the statusline
+        astronvim.status.component.git_branch(),
+        astronvim.status.component.file_info(),
+        astronvim.status.component.git_diff(),
+        astronvim.status.component.diagnostics(),
+        astronvim.status.component.fill(),
+        astronvim.status.component.macro_recording(),
+        astronvim.status.component.fill(),
+        astronvim.status.component.lsp(),
+        astronvim.status.component.treesitter(),
+        astronvim.status.component.nav(),
+      }
+      -- return the final configuration table
+      return config
+    end, 
   },
 
   -- LuaSnip Options
